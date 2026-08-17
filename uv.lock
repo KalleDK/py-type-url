@@ -77,4 +77,4 @@ test = [
 
 [package.metadata.requires-dev]
 stubs = []
-test = [{ name = "pytest", specifier = ">=9.0.2" }]
+test = [{ name = "pytest", specifier = ">=9.1.1" }]
