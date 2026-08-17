@@ -1,0 +1,45 @@
+[project]
+name = "type-url"
+version = "0.1.0"
+description = "A simple type to handle URL interactions"
+readme = "README.md"
+requires-python = ">=3.13"
+authors = [
+    {name = "Kalle M. Krog Aagaard", email = "git@k-moeller.dk"},
+]
+maintainers = [
+    {name = "Kalle M. Krog Aagaard", email = "git@k-moeller.dk"},
+]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+]
+
+[project.urls]
+Homepage = "https://github.com/KalleDK/py-type-url"
+Documentation = "https://github.com/KalleDK/py-type-url"
+Repository = "https://github.com/KalleDK/py-type-url.git"
+
+[dependency-groups]
+test = [
+    "pytest>=9.0.2",
+]
+stubs = []
+
+[build-system]
+requires = ["uv_build>=0.11.29,<0.12.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "type_url"
+
+[tool.pyright]
+include = ["src", "tests", "examples"]
+typeCheckingMode = "strict"
+pythonVersion = "3.13"
+
+[tool.ruff]
+line-length = 120
+target-version = "py313"

@@ -1,0 +1,9 @@
+_commit: v1.3.16
+_src_path: https://github.com/KalleDK/copier-python.git
+email: git@k-moeller.dk
+full_name: Kalle M. Krog Aagaard
+module_slug: type_url
+project_description: A simple type to handle URL interactions
+project_name: Type URL
+python_version: '3.13'
+use_defaults: true
