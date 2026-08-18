@@ -32,6 +32,24 @@ class SSLConfig(pydantic.BaseModel):
     capath: pathlib.Path | None = None
     cadata: str | bytes | None = None
 
+    @classmethod
+    def create(
+        cls,
+        insecure: bool | None = None,
+        cafile: pathlib.Path | None = None,
+        capath: pathlib.Path | None = None,
+        cadata: str | bytes | None = None,
+    ) -> SSLConfig | bool | None:
+        if insecure is True:
+            return False
+
+        if cafile is None and capath is None and cadata is None:
+            if insecure is None:
+                return None
+            return True
+
+        return cls(cafile=cafile, capath=capath, cadata=cadata)
+
 
 def create_ssl_context(ssl_config: SSLConfig | bool | None) -> _ssl.SSLContext:
     match ssl_config:
