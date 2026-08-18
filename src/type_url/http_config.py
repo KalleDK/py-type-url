@@ -3,11 +3,19 @@ from __future__ import annotations
 import pathlib
 import ssl as _ssl
 from collections.abc import Callable
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import Literal, NotRequired, TypedDict
+from zoneinfo import ZoneInfo
 
 import httpx
 import pydantic
+
+TZ: ZoneInfo | None = None
+
+
+def now() -> datetime:
+    return datetime.now(TZ)
+
 
 # region SSL
 
@@ -237,3 +245,67 @@ class HTTPConfig(pydantic.BaseModel):
     timeout: timedelta | Literal[False] | TimeoutConfig | None = None
     limits: LimitConfig | None = None
     ssl: bool | SSLConfig | None = None
+
+
+# region Logger
+
+
+class AsyncTransportLogger(httpx.AsyncBaseTransport):
+    def __init__(self, transport: httpx.AsyncBaseTransport, log_dir: pathlib.Path, suffix: str = ".txt") -> None:
+        self.transport = transport
+        self.log_dir = log_dir
+        self.log_dir.mkdir(parents=True, exist_ok=True)
+        self.prefix = now().strftime("%Y%m%d_%H%M%S")
+        self.suffix = suffix
+        self._idx = 0
+
+    def get_idx(self) -> int:
+        idx = self._idx
+        self._idx += 1
+        return idx
+
+    async def handle_async_request(
+        self,
+        request: httpx.Request,
+    ) -> httpx.Response:
+        idx = self.get_idx()
+
+        data = await request.aread()
+        self.log_dir.joinpath(f"{self.prefix}_{idx:04d}_REQ{self.suffix}").write_bytes(data)
+        response = await self.transport.handle_async_request(request)
+        data = await response.aread()
+        self.log_dir.joinpath(f"{self.prefix}_{idx:04d}_RES{self.suffix}").write_bytes(data)
+
+        return response
+
+
+class SyncTransportLogger(httpx.BaseTransport):
+    def __init__(self, transport: httpx.BaseTransport, log_dir: pathlib.Path, suffix: str = ".txt") -> None:
+        self.transport = transport
+        self.log_dir = log_dir
+        self.log_dir.mkdir(parents=True, exist_ok=True)
+        self.prefix = now().strftime("%Y%m%d_%H%M%S")
+        self.suffix = suffix
+        self._idx = 0
+
+    def get_idx(self) -> int:
+        idx = self._idx
+        self._idx += 1
+        return idx
+
+    def handle_request(
+        self,
+        request: httpx.Request,
+    ) -> httpx.Response:
+        idx = self.get_idx()
+
+        data = request.read()
+        self.log_dir.joinpath(f"{self.prefix}_{idx:04d}_REQ{self.suffix}").write_bytes(data)
+        response = self.transport.handle_request(request)
+        data = response.read()
+        self.log_dir.joinpath(f"{self.prefix}_{idx:04d}_RES{self.suffix}").write_bytes(data)
+
+        return response
+
+
+# endregion
