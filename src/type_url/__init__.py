@@ -13,7 +13,7 @@ else:
     type GetCoreSchemaHandler = object
     type CoreSchema = object
 
-__version__ = "0.1.5.1"
+__version__ = "0.1.6"
 
 
 def _make_url(default: URLConfig, url: str) -> URL:
