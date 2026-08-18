@@ -212,7 +212,7 @@ wheels = [
 
 [[package]]
 name = "type-url"
-version = "0.1.3.1"
+version = "0.1.4"
 source = { editable = "." }
 
 [package.optional-dependencies]
