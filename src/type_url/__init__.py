@@ -405,3 +405,12 @@ class BaseURL(NamedTuple):
         """
 
         return str(self.joinpath(*paths))
+
+
+def base_url_config(
+    scheme: str | None = None,
+    host: str | None = None,
+    port: int | None = None,
+    path: pathlib.PurePosixPath | str | None = None,
+) -> BaseURLConfig:
+    return BaseURLConfig(scheme=scheme, host=host, port=port, path=parse_path(path))
