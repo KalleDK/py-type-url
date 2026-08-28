@@ -65,7 +65,7 @@ wheels = [
 
 [[package]]
 name = "type-url"
-version = "0.1.9.1"
+version = "0.1.10"
 source = { editable = "." }
 
 [package.dev-dependencies]
