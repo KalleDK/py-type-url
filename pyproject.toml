@@ -21,11 +21,7 @@ Homepage = "https://github.com/KalleDK/py-type-url"
 Documentation = "https://github.com/KalleDK/py-type-url"
 Repository = "https://github.com/KalleDK/py-type-url.git"
 
-[project.optional-dependencies]
-httpx = [
-    "httpx>=0.28.1",
-    "pydantic>=2.13.4",
-]
+
 
 [dependency-groups]
 test = [
