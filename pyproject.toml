@@ -1,6 +1,6 @@
 [project]
 name = "type-url"
-version = "0.1.10"
+version = "0.1.11"
 description = "A simple type to handle URL interactions"
 readme = "README.md"
 requires-python = ">=3.13"

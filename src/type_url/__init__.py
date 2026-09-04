@@ -13,7 +13,7 @@ else:
     type GetCoreSchemaHandler = object
     type CoreSchema = object
 
-__version__ = "0.1.10"
+__version__ = "0.1.11"
 
 
 def parse_path(path: str | pathlib.PurePosixPath | None) -> pathlib.PurePosixPath:
