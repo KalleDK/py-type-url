@@ -26,8 +26,11 @@ Repository = "https://github.com/KalleDK/py-type-url.git"
 [dependency-groups]
 test = [
     "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
 ]
-stubs = []
+stubs = [
+    "pydantic>=2.13.5",
+]
 
 [build-system]
 requires = ["uv_build>=0.12.4,<0.13.0"]
@@ -44,3 +47,7 @@ pythonVersion = "3.13"
 [tool.ruff]
 line-length = 120
 target-version = "py313"
+
+[tool.pytest.ini_options]
+addopts = "-v --cov=type_url --cov-report=term-missing --cov-report=xml"
+testpaths = ["tests"]

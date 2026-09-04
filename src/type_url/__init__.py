@@ -16,6 +16,16 @@ else:
 __version__ = "0.1.10"
 
 
+def parse_path(path: str | pathlib.PurePosixPath | None) -> pathlib.PurePosixPath:
+    if path is None:
+        return pathlib.PurePosixPath("/")
+    if isinstance(path, str):
+        if not path.startswith("/"):
+            path = "/" + path
+        return pathlib.PurePosixPath(path)
+    return path
+
+
 def _make_url(default: URLConfig, url: str) -> URL:
     parsed = urllib.parse.urlsplit(url)
     if parsed.scheme == "" and parsed.netloc == "" and not url.startswith("/"):
@@ -108,16 +118,6 @@ class URLConfig:
         )
 
 
-def parse_path(path: str | pathlib.PurePosixPath | None) -> pathlib.PurePosixPath:
-    if path is None:
-        return pathlib.PurePosixPath("/")
-    if isinstance(path, str):
-        if not path.startswith("/"):
-            path = "/" + path
-        return pathlib.PurePosixPath(path)
-    return path
-
-
 def url_config(
     scheme: str | None = None,
     host: str | None = None,
@@ -128,8 +128,8 @@ def url_config(
 
 
 class URL(NamedTuple):
-    scheme: str | None
-    host: str | None
+    scheme: str
+    host: str
     port: int | None
     path: pathlib.PurePosixPath
     query: str | None
@@ -143,8 +143,6 @@ class URL(NamedTuple):
         Returns:
             str: The network location part of the URL.
         """
-        if self.host is None:
-            return ""
         if self.port is None:
             return self.host
         return f"{self.host}:{self.port}"
@@ -152,9 +150,13 @@ class URL(NamedTuple):
     @classmethod
     def from_url(cls, url: str) -> Self:
         parsed_url = urllib.parse.urlsplit(url)
+        if parsed_url.scheme == "":
+            raise ValueError("URL must have a scheme.")
+        if parsed_url.hostname is None or parsed_url.hostname == "":
+            raise ValueError("URL must have a host.")
         return cls(
-            scheme=parsed_url.scheme or None,
-            host=parsed_url.hostname or None,
+            scheme=parsed_url.scheme,
+            host=parsed_url.hostname,
             port=parsed_url.port,
             path=pathlib.PurePosixPath(parsed_url.path) if parsed_url.path else pathlib.PurePosixPath("/"),
             query=parsed_url.query or None,
@@ -172,7 +174,7 @@ class URL(NamedTuple):
             (
                 self.scheme or "",
                 self.netloc,
-                str(self.path),
+                os.path.normpath(self.path),
                 self.query or "",
                 self.fragment or "",
             )
@@ -299,8 +301,8 @@ class BaseURLConfig:
 
 
 class BaseURL(NamedTuple):
-    scheme: str | None
-    host: str | None
+    scheme: str
+    host: str
     port: int | None
     base_path: pathlib.PurePosixPath
     sub_path: pathlib.PurePosixPath
@@ -325,8 +327,6 @@ class BaseURL(NamedTuple):
         Returns:
             str: The network location part of the URL.
         """
-        if self.host is None:
-            return ""
         if self.port is None:
             return self.host
         return f"{self.host}:{self.port}"
@@ -334,9 +334,13 @@ class BaseURL(NamedTuple):
     @classmethod
     def from_url(cls, url: str) -> Self:
         parsed_url = urllib.parse.urlsplit(url)
+        if parsed_url.scheme == "":
+            raise ValueError("BaseURL must have a scheme")
+        if parsed_url.hostname is None or parsed_url.hostname == "":
+            raise ValueError("BaseURL must have a host")
         return cls(
-            scheme=parsed_url.scheme or None,
-            host=parsed_url.hostname or None,
+            scheme=parsed_url.scheme,
+            host=parsed_url.hostname,
             port=parsed_url.port,
             base_path=pathlib.PurePosixPath(parsed_url.path) if parsed_url.path else pathlib.PurePosixPath("/"),
             sub_path=pathlib.PurePosixPath(),
